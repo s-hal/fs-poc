@@ -1,0 +1,90 @@
+services:
+  wallet_provider:
+    image: "${DOCKERHUB_FQDN}/fedservice:${TAG}"
+    command: "wallet_provider"
+    ports:
+      - "5001:5001"
+    environment:
+      FEDSERVICE_ENTITYID: ${WALLET_PROVIDER_URL}
+      FEDSERVICE_WEBCERT_KEY: /certs/privkey.pem
+      FEDSERVICE_WEBCERT_CERT: /certs/cert+chain.pem
+      FEDSERVICE_SECRET_KEY: "sdfwefdfgsdfgsergsgdf"
+      FEDSERVICE_DEBUG: true
+      FEDSERVICE_PORT: 5001
+      FEDSERVICE_BIND: 0.0.0.0
+    volumes:
+      - ./wallet_provider:/wallet_provider:rw
+      - ./certificates/wallet_provider:/certs:ro
+    networks:
+      dc4eu_shared_network:
+        aliases:
+          - "${WALLET_PROVIDER_HOST}"
+
+  trust_mark_issuer:
+    image: "${DOCKERHUB_FQDN}/fedservice:${TAG}"
+    command: "trust_mark_issuer"
+    ports:
+      - "6001:6001"
+    environment:
+      FEDSERVICE_ENTITYID: ${TRUST_MARK_ISSUER_URL}
+      FEDSERVICE_WEBCERT_KEY: /certs/privkey.pem
+      FEDSERVICE_WEBCERT_CERT: /certs/cert+chain.pem
+      FEDSERVICE_SECRET_KEY: "sdfwefdfgsdfgsergsgdf"
+      FEDSERVICE_DEBUG: true
+      FEDSERVICE_PORT: 6001
+      FEDSERVICE_BIND: 0.0.0.0
+    volumes:
+      - ./trust_mark_issuer:/trust_mark_issuer:rw
+      - ./certificates/trust_mark_issuer:/certs:ro
+    networks:
+      dc4eu_shared_network:
+        aliases:
+          - "${TRUST_MARK_ISSUER_HOST}"
+  
+  trust_anchor:
+    image: "${DOCKERHUB_FQDN}/fedservice:${TAG}"
+    command: "trust_anchor"
+    ports:
+      - "7001:7001"
+    environment:
+      FEDSERVICE_ENTITYID: ${TRUST_ANCHOR_URL}
+      FEDSERVICE_WEBCERT_KEY: /certs/privkey.pem
+      FEDSERVICE_WEBCERT_CERT: /certs/cert+chain.pem
+      FEDSERVICE_SECRET_KEY: "sdfwefdfgsdfgsergsgdf"
+      FEDSERVICE_DEBUG: true
+      FEDSERVICE_PORT: 7001
+      FEDSERVICE_BIND: 0.0.0.0
+    volumes:
+      - ./trust_anchor:/trust_anchor:rw
+      - ./certificates/trust_anchor:/certs:ro
+    networks:
+      dc4eu_shared_network:
+        aliases:
+          - "${TRUST_ANCHOR_HOST}"
+  
+  flask_wallet:
+    image: "${DOCKERHUB_FQDN}/fedservice:${TAG}"
+    command: "flask_wallet"
+    ports:
+      - "5005:5005"
+    environment:
+      FEDSERVICE_ENTITYID: ${FLASK_WALLET_URL}
+      FEDSERVICE_WEBCERT_KEY: /certs/privkey.pem
+      FEDSERVICE_WEBCERT_CERT: /certs/cert+chain.pem
+      FEDSERVICE_SECRET_KEY: "sdfwefdfgsdfgsergsgdf"
+      FEDSERVICE_DEBUG: true
+      FEDSERVICE_PORT: 5005
+      FEDSERVICE_BIND: 0.0.0.0
+    volumes:
+      - ./flask_wallet:/flask_wallet:rw
+      - ./certificates/flask_wallet:/certs:ro
+      - ./log:/log:rw
+    networks:
+      dc4eu_shared_network:
+        aliases:
+          - "${FLASK_WALLET_HOST}"
+
+networks:
+  dc4eu_shared_network:
+    name: ${NETWORK_NAME}
+    external: true
